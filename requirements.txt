@@ -1,0 +1,4 @@
+docopt>0
+-e git+git@github.com:tribune/cranial-common.git@v0.2.0#egg=cranial-common
+-e git+git@github.com:tribune/cranial-datastore.git@v0.2.0#egg=cranial-datastore
+-e git+git@github.com:tribune/cranial-messaging.git@v0.2.0#egg=cranial-messaging
