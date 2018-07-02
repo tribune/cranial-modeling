@@ -2,13 +2,12 @@
 This file has primitive models that wrap around gensim common models such as LSI, TFIDF, etc...
 """
 import gensim as g
-import logging
 import os
 from cranial.re_iter import ReMap, DiskCache
 from cranial.model_base import StatefulModel, ModelBase
 from cranial.common import logger
 
-log = logger.create('gensim_models', os.environ.get('MODELS_LOGLEVEL', logging.WARNING))  # streaming log
+log = logger.get(name='gensim_models', var='MODELS_LOGLEVEL')  # streaming log
 
 
 class GensimDictionary(StatefulModel):

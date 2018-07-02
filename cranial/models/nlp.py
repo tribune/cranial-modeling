@@ -9,7 +9,7 @@ from collections import Counter
 from cranial.common import logger
 from cranial.model_base import StatefulModel
 
-log = logger.get(name='nlp_models', var=os.environ.get('MODELS_LOGLEVEL'))
+log = logger.get(name='nlp_models', var='MODELS_LOGLEVEL')
 
 
 class BasicDictionary(StatefulModel):
