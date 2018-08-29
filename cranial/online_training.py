@@ -25,7 +25,7 @@ class TrainerBase(metaclass=ABCMeta):
         """
         Should take model and training data as arguments and return an updated model. The updating logic can be
         anything, it can use the data, or not use the data, or maybe completely re-instantiates a model. It's up to a
-        developer and what needs he has.
+        developer and what needs they have.
 
         This method should also return True/False whether update was completed, this will allow OnlineLearningWrapper
         to call update again even outside of schedule to check again if update was completed
