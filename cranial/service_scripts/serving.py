@@ -33,7 +33,6 @@ from docopt import docopt
 from cranial.fetchers import S3InMemoryConnector
 from cranial.fetchers.s3 import from_s3
 from cranial.listeners.zmq import Listener as Zmq
-from cranial.listeners import Demo
 from cranial.messaging.adapters import firehose_async
 from cranial.common import logger
 
@@ -165,31 +164,6 @@ if __name__ == '__main__':
     # start model
     model = start_model(CONFIG, rec_version=CONFIG['model_name'], log=log)
 
-    if opts['--demo']:
-
-        # would be cool to have some demonstration
-        import numpy as np
-
-        # this incoming data consists of
-        # - random user id between 0 and 99 - random section-slug
-
-        events = [
-            # Make a dummy event...
-            (
-                '',
-                json.dumps({
-                    'user_id': str(user),
-                    'url': 'http://www.latimes.com/{}/{}-story.html'.format(
-                        *list(str(section_slug)))})
-            )
-            # .. 100 times.
-            for user, section_slug in zip(
-                np.random.randint(0, 100, 100),
-                np.random.randint(10, 30, 100))
-        ]  # End big list comprehension.
-
-        listener = Demo(events)
-    else:
-        listener = Zmq(opts['--port'])
+    listener = Zmq(opts['--port'])
 
     run_server(model, listener, firehose_name=firehose_name)
