@@ -1,0 +1,29 @@
+// example config for running train.py
+{
+  "model_name": "my_unique_model_name",
+  "try_load": false,  // will NOT try to load model state from s3
+  "input_data_params": {  // will be passed to a dataset constructor as keyword args
+    "arg1": "val1",
+    "arg2": {"foo": "bar"},
+    "arg3": 42
+  },
+  "model_params": {
+    // will be passed to a model constructor as keyword args
+    "maybe_submodel_1_params": {
+      "tz": "US/Eastern",
+      "in_mem": true,
+      "read_only": false
+    },
+    "maybe_sub_model_2_params": {
+      "output_field": "prediction",
+      "boosting_type": "gbdt",
+      "objective": "binary",
+      "metric": "auc"
+      // ...
+    },
+    "could_be_train_params": {
+      "n_folds": 3
+    },
+    "just_param": "blah"
+  }
+}
