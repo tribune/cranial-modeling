@@ -2,14 +2,28 @@
 base classes for models
 """
 from abc import ABCMeta, abstractmethod
-import numpy as np
-import dill as pickle
 import os
 from collections import OrderedDict
 from cranial.common import logger
 from cranial.re_iter import ReMap
 
 log = logger.get(name='model_base', var='MODELS_LOGLEVEL')  # streaming log
+
+# Optional packages
+try:
+    import dill as pickle
+except ImportError:
+    import pickle
+
+try:
+    import numpy as np
+except ImportError as e:
+    log.info("Failed to import optional package: {}: {}.".format(type(e), e))
+
+
+
+class NoMatch(Exception):
+    pass
 
 
 class State(metaclass=ABCMeta):
@@ -45,10 +59,14 @@ class State(metaclass=ABCMeta):
         for attr in dir(self):
             if (not attr.startswith("_")) and (not hasattr(getattr(self, attr), '__call__')):
                 attr_obj = getattr(self, attr)
-                if isinstance(attr_obj, np.ndarray):
-                    attr_obj = "arr {} {}".format(attr_obj.shape, attr_obj)
-                elif hasattr(attr_obj, "__len__"):
-                    attr_obj = "len {} {}".format(len(attr_obj), attr_obj)
+                try:
+                    if isinstance(attr_obj, np.ndarray):
+                        attr_obj = "arr {} {}".format(attr_obj.shape, attr_obj)
+                    else:
+                        raise NoMatch()
+                except (NoMatch, NameError) as e:
+                    if hasattr(attr_obj, "__len__"):
+                        attr_obj = "len {} {}".format(len(attr_obj), attr_obj)
                 ss.append("{} = {}".format(attr, attr_obj)[:200])
         return '\n'.join(ss)
 
@@ -68,15 +86,24 @@ class State(metaclass=ABCMeta):
             An optional connector object, if None, then state will be saved to a file
         """
         assert (fpath is not None) or (connector is not None), "either fpath or connector should be given"
-        if connector is not None:
-            log.info("Trying to save using {} to fpath={}".format(connector, fpath))
-            connector.put(source=pickle.dumps(self), name=fpath)
-            log.info("Saved using {} to fpath={}".format(connector, fpath))
-        else:
-            log.info("Trying to save {}".format(fpath))
-            with open(fpath, 'wb') as f:
-                pickle.dump(self, f)
-            log.info("Saved {}".format(fpath))
+
+        try:
+            if connector is not None:
+                log.info("Trying to save using {} to fpath={}".format(
+                    connector, fpath))
+                connector.put(source=pickle.dumps(self), name=fpath)
+                log.info("Saved using {} to fpath={}".format(connector, fpath))
+            else:
+                log.info("Trying to save {}".format(fpath))
+                with open(fpath, 'wb') as f:
+                    pickle.dump(self, f)
+                log.info("Saved {}".format(fpath))
+        except PicklingError as e:
+            log.error(
+              """Pickling Error: Consider installing the `dill` module. It
+              will automagtically be used as a replacement for `pickle` when
+              available.""")
+            raise e
 
     @classmethod
     def load(cls, fpath:str=None, connector=None) -> State:
