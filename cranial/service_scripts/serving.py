@@ -2,12 +2,11 @@
 Standard script for serving prediction that use cranial.
 
 Usage:
-    serving.py [--demo] [--port=PORT | --topic=TOPIC] [--no-load] [--config=<s>] [--model_suffix=<s>] [--firehose=<s>]
+    serving.py [--demo] [--port=PORT] [--no-load] [--config=<s>] [--model_suffix=<s>] [--firehose=<s>]
 
 Options:
 --demo              run demo mode
 --port=PORT         Port for ZMQ listener. [default: 5678]
---topic=TOPIC       Topic for Kafka listener.
 --no-load           if set, model will not load from previously saved state
 --config=<s>        use a different config file.
                     Can also use a different config file stored in s3, use standard format s3://BUCKET/KEY
