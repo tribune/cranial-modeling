@@ -13,19 +13,31 @@ log = logger.get(name='model_base', var='MODELS_LOGLEVEL')  # streaming log
 
 
 class State(metaclass=ABCMeta):
-    """ An object with save() & load() methods.
+    """ An object with save() & load() methods and any other properties.
 
     Notice that `Foo` below does NOT inherit from State.
     >>> class Foo():
     ...     def save(self):
     ...             return
     ...     def load(self):
-    ...             return
+    ...             return self
     ...
     >>> isinstance(Foo(), State)
     True
     >>> isinstance(tuple(), State)
     False
+    >>> s = State()
+    >>> s.quest = 'grail'
+    >>> str(s)
+    'quest = len 5 grail'
+    >>> from tempfile import mkstemp
+    >>> fh, tmpfile = mkstemp()
+    >>> s.save(tmpfile)
+    >>> t = State.load(tmpfile)
+    >>> t.quest == s.quest
+    True
+
+
     """
 
     def __str__(self):
@@ -40,7 +52,7 @@ class State(metaclass=ABCMeta):
                 ss.append("{} = {}".format(attr, attr_obj)[:200])
         return '\n'.join(ss)
 
-    def save(self, fpath:str=None, connector=None):
+    def save(self, fpath:str=None, connector=None, t) -> None:
         """
         For now this just pickles the state into a file or puts into a connector stream
 
@@ -67,7 +79,7 @@ class State(metaclass=ABCMeta):
             log.info("Saved {}".format(fpath))
 
     @classmethod
-    def load(cls, fpath:str=None, connector=None):
+    def load(cls, fpath:str=None, connector=None) -> State:
         """
         Loads pickled state from file or a stream and returns it
 
