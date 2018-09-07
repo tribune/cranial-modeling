@@ -1,0 +1,37 @@
+// example config for running backfill.py or kafka_process.py
+{
+  "model_name": "my_unique_model_name",
+  "try_load": false, // option to try load saved model state from s3
+  "input_data_params": {
+    // will be passed to a dataset constructor as keyword args
+    "arg1": "val1",
+    "arg2": {"foo": "bar"},
+    "s3_pre_date_prefix": "path/to/data",
+    "verbose": true,
+    "no_parallel": true
+  },
+  "output_data_params": {
+    // will be passed to a Consumer (the object that initiates all calculations and
+    // receves final processed results constructor as keyword args
+  },
+  "model_params": {
+    // will be passed to a model constructor as keyword args
+    "maybe_submodel_1_params": {
+      "tz": "US/Eastern",
+      "in_mem": true,
+      "read_only": false
+    },
+    "maybe_sub_model_2_params": {
+      "output_field": "prediction",
+      "boosting_type": "gbdt",
+      "objective": "binary",
+      "metric": "auc"
+      // ...
+    },
+    "could_be_train_params": {
+      "n_folds": 3
+    },
+    "just_param": "blah"
+    // ...
+  }
+}

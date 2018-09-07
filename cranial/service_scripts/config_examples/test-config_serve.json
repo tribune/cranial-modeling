@@ -1,0 +1,8 @@
+// example config for running serving.py
+{
+  "model_name": "my_unique_model_name",
+  "try_load": true, // will try to load model from s3
+  "model_params": {
+    // passed to the model __init__ as keyword args
+  }
+}
