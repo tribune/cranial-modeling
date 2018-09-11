@@ -7,14 +7,17 @@ Generic tools
 
 Machine Learning Tools
 ----------------------
-- Standard model interface, where "model" means any stateless or stateful
+
+- Standard model interface
+   ...where "model" means any stateless or stateful
    transformation of data. Because of the standard interface each "model"
    can be used by itself or as a step in another "model". This is similar
    to scikit-learn pipelines, but at a lower level and with a use of specialized
-   iter-tools instead of in-memory data. This is also similar to spark or dask,
-   but in pure python and without sofisticated parallelization across machines.
-- Standard scripts for training models and using models for batch or online
-   inference.
+   iter-tools instead of in-memory data.
+   
+- Standard scripts for deploying Models as microservices
+   Including training, and using models for batch or online inference.
+
 
 Models
 ------
@@ -23,11 +26,9 @@ explicitly be included during pip installation.
 
 Installation
 ============
-Please note that pytorch cannot be installed through the normal pip installation and
-the developer is responsible for installing it, if desired, on their own.
+The basic installation will include any dependencies needed if you are just writing your own models. 
 
-The basic installation will include any dependencies needed to run code from the
-cranial and cranial.fetchers modules. Code from cranial.models may need extra packages
+If you want to use soem of the pre-packaged models in cranial.models, you may need extra packages
 installed. Available extras are:
 
 bpe-nlp                   Installs numpy in support of bpe and nlp.
