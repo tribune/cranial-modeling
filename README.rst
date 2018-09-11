@@ -37,12 +37,14 @@ spacy                     Installs spacy in support or the spacy_tokenizer.
 
 
 Example of installing spacy and bpe-nlp support
+
 .. code-block:: bash
 
    pip install "cranial[spacy, bpe-nlp]"
 
 
 After spacy installation, the additional following step is required:
+
 .. code-block:: bash
 
    python -m spacy.en.download parser
