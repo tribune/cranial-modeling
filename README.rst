@@ -47,6 +47,18 @@ After spacy installation, the additional following step is required:
 
    python -m spacy.en.download parser
 
+Usage
+======
+(Work in progress. Tutorials forthcoming?)
+
+0. Create a directory and change to it.
+
+1. Create a file called `model.py` with a Model that inherits from `cranial.model_base.ModelBase` or
+`cranial.model_base.StatefulModel`.
+
+2. Create a `config.json` file with at least `{"model_name": "some_unique_name"}`.
+
+3. Run `python3 -m cranial.service_scripts.serving --no-load`. 
 
 About Cranial
 ======================
