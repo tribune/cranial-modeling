@@ -3,17 +3,17 @@ Cranial Modeling
 
 Generic tools
 -------------
-#. Specialized iter-tools where each iterator can be used more than once, but does not load all data into memory.
+- Specialized iter-tools where each iterator can be used more than once, but does not load all data into memory.
 
 Machine Learning Tools
 ----------------------
-#. Standard model interface, where "model" means any stateless or stateful
+- Standard model interface, where "model" means any stateless or stateful
    transformation of data. Because of the standard interface each "model"
    can be used by itself or as a step in another "model". This is similar
    to scikit-learn pipelines, but at a lower level and with a use of specialized
    iter-tools instead of in-memory data. This is also similar to spark or dask,
    but in pure python and without sofisticated parallelization across machines.
-#. Standard scripts for training models and using models for batch or online
+- Standard scripts for training models and using models for batch or online
    inference.
 
 Models
@@ -51,14 +51,13 @@ Usage
 ======
 (Work in progress. Tutorials forthcoming?)
 
-0. Create a directory and change to it.
+#. Create a directory and change to it.
 
-1. Create a file called `model.py` with a Model that inherits from `cranial.model_base.ModelBase` or
-`cranial.model_base.StatefulModel`.
+#. Create a file called `model.py` with a class called `Model` that inherits from `cranial.model_base.ModelBase` or `cranial.model_base.StatefulModel`.
 
-2. Create a `config.json` file with at least `{"model_name": "some_unique_name"}`.
+#. Create a `config.json` file with at least `{"model_name": "some_unique_name"}`.
 
-3. Run `python3 -m cranial.service_scripts.serving --no-load`. 
+#. Run `python3 -m cranial.service_scripts.serving --no-load`. 
 
 About Cranial
 ======================
