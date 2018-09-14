@@ -106,7 +106,7 @@ class State(metaclass=ABCMeta):
             raise e
 
     @classmethod
-    def load(cls, fpath:str=None, connector=None) -> State:
+    def load(cls, fpath:str=None, connector=None) -> 'State':
         """
         Loads pickled state from file or a stream and returns it
 
