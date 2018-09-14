@@ -1,0 +1,11 @@
+[tool.poetry]
+name = "project_template"
+version = "0.1.0"
+description = "Template for Cranial Modeling Projects."
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.5"
+cranial-modeling = "^0.2.0"
+
+[tool.poetry.dev-dependencies]
