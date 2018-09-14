@@ -14,7 +14,7 @@ Machine Learning Tools
    can be used by itself or as a step in another "model". This is similar
    to scikit-learn pipelines, but at a lower level and with a use of specialized
    iter-tools instead of in-memory data.
-   
+
 - Standard scripts for deploying Models as microservices
    Including training, and using models for batch or online inference.
 
@@ -26,22 +26,18 @@ explicitly be included during pip installation.
 
 Installation
 ============
-The basic installation will include any dependencies needed if you are just writing your own models. 
+The basic installation will include any dependencies needed if you are just
+writing your own models.
 
-If you want to use soem of the pre-packaged models in cranial.models, you may need extra packages
-installed. Available extras are:
-
-bpe-nlp                   Installs numpy in support of bpe and nlp.
-gensim                    Installs the gensim package to support gensim_models.
-p2p_utils                 Installs bs4 in support of p2p_utils.
-spacy                     Installs spacy in support or the spacy_tokenizer.
+If you want to use some of the pre-packaged models in cranial.models, you may
+need additional packages installed, such as `gensim` or `spacy`.
 
 
-Example of installing spacy and bpe-nlp support
+Example of installing everything:
 
 .. code-block:: bash
 
-   pip install "cranial[spacy, bpe-nlp]"
+   pip install "cranial-modeling spacy gensim"
 
 
 After spacy installation, the additional following step is required:
@@ -60,7 +56,7 @@ Usage
 
 #. Create a `config.json` file with at least `{"model_name": "some_unique_name"}`.
 
-#. Run `python3 -m cranial.service_scripts.serving --no-load`. 
+#. Run `python3 -m cranial.service_scripts.serving --no-load`.
 
 About Cranial
 ======================
