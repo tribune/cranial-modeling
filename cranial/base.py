@@ -70,7 +70,7 @@ class State(metaclass=ABCMeta):
                 ss.append("{} = {}".format(attr, attr_obj)[:200])
         return '\n'.join(ss)
 
-    def save(self, fpath:str=None, connector=None, t) -> None:
+    def save(self, fpath:str=None, connector=None) -> None:
         """
         For now this just pickles the state into a file or puts into a connector stream
 
