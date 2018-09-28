@@ -22,10 +22,10 @@ Options:
 import json
 import time
 import os
-import traceback
-import arrow
+from typing import Any, Dict # noqa: W393
 
 # 3rd-party modules.
+import arrow
 from docopt import docopt
 
 # 1st-party modules.
@@ -56,15 +56,6 @@ def start_model(opts, **kwargs):
     return m
 
 
-def parse_data(data):
-    parsed = {}
-    try:
-        parsed = json.loads(data[-1])
-        parsed = dict([(k, v) if len(v) > 1 else (k, v[0]) for k, v in parsed.items()])
-    except Exception as e:
-        log.error("{}\tdata: {}".format(e, data))
-    return parsed
-
 def set_ready():
     with open('/tmp/serving-healthy', 'w') as f:
         # Two minutes grace for start-up time.
@@ -78,8 +69,6 @@ def set_last_response_time(t: float):
 
 def run_server(model, listener, firehose_name=None):
     """
-    The server expects a \t separated ascii byte string of (some, legacy, stuff, json with an actual data)
-    and returns a \t separated list of the model name(+version) used, and a json with predictions.
 
     Parameters
     ----------
@@ -90,39 +79,52 @@ def run_server(model, listener, firehose_name=None):
         an object that receives messages with data and sends replies with predictions
     """
 
-    # Write file that can be used by Marathon to detect the service as ready to
+    # Write file that can be used to detect the service as ready to
     # receive requests.
     set_ready()
 
     while True:
-        log.info("WAITING FOR MESSAGES FROM LISTENER.....")
+        log.debug("WAITING FOR MESSAGES FROM LISTENER.....")
         # receive new message
         msg = listener.recv()
-        log.info("got message {}".format(msg))
+        log.debug("got message {}".format(msg))
 
-        # split message
-        data = msg.decode('ascii').split('\t')
+        # Decode message to text, if that's expected.
+        if model.encoding:
+            msg = msg.decode(model.encoding)
 
-        # parse message list
-        parsed = parse_data(data)
+        # parse message to Dict-like.
+        try:
+            parsed = model.parser.loads(msg)
+        except Exception as e:
+            if type(msg) != str:
+                msg = '{}...'.format(msg[:8])
+
+            log.error("{}\tdata: {}".format(e, msg))
+            continue
 
         # use model to predict
-        t_start = time.time()
-        predictions = model.transform(parsed)
-        t_end = time.time()
-        set_last_response_time(t_end)
+        if model.timer:
+            t_start = time.time()
+        output = model.transform(parsed)
+        if model.timer:
+            t_end = time.time()
+            set_last_response_time(t_end)
 
         # assemble reply
-        results = [model.name, json.dumps(predictions)]
+        results = model.parser.dumps({'name': model.name,
+                                      'results': output})
 
         # send reply
-        listener.resp(bytes('\t'.join(results), 'ascii'))
+        listener.resp(results)
         log.info("sent back {}".format(results))
         log.info("model time {}".format(t_end - t_start))
         if firehose_name is not None:
-            firehose_async.put_data(firehose_name,
-                                    json.dumps({'time_iso8601': str(arrow.utcnow()),
-                                                'model_response_time': t_end - t_start, **parsed, **predictions}))
+            record = {'time_iso8601': str(arrow.utcnow()),
+                      **parsed, **output}  # type: Dict[str, Any]
+            if model.timer:
+                record['model_response_time'] = t_end - t_start
+            firehose_async.put_data(firehose_name, json.dumps(record))
 
 
 if __name__ == '__main__':
@@ -145,18 +147,18 @@ if __name__ == '__main__':
         CONFIG = json.load(f)
 
     # maybe add a suffix to the model name
-    CONFIG['model_name'] += opts['--model_suffix'] if opts['--model_suffix'] else ''
+    CONFIG['model_name'] += opts.get('--model_suffix', '')
 
     # try to set up firehose logging
     # firehose should be specified either in config file or by script option
     # if not specified in either place then there will be no logging
-    firehose_name = CONFIG.get('firehose') if opts['--firehose'] is None else opts['--firehose']
+    firehose_name = opts.get('--firehose') or CONFIG.get('firehose')
     if firehose_name is not None:
         # this will throw an error if file not found
         with open('/keys/firehose-write.json') as creds:
             firehose_async.firehose.auth(json.load(creds))
 
-    # sometimes it is useful to nod load a model but just instantiate
+    # sometimes it is useful to not load a model but just instantiate
     if opts['--no-load']:
         CONFIG['try_load'] = False
 

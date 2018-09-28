@@ -2,8 +2,10 @@
 base classes for models
 """
 from abc import ABCMeta, abstractmethod
-import os
 from collections import OrderedDict
+import json
+import os
+
 from cranial.common import logger
 from cranial.re_iter import ReMap
 
@@ -151,6 +153,16 @@ class State(metaclass=ABCMeta):
         return NotImplemented
 
 
+class LegacyTroncParser():
+    def loads(msg):
+        parsed = json.loads(msg.split('\t')[-1])
+        return dict([(k, v) if len(v) > 1 else (k, v[0])
+            for k, v in parsed.items()])
+
+    def dumps(msg):
+        return json.dumps([msg['name'], msg['results']])
+
+
 class ModelBase(metaclass=ABCMeta):
     """A model that does not have a state, just implements a data transformation
     method.
@@ -170,6 +182,11 @@ class ModelBase(metaclass=ABCMeta):
     False
     """
     name = 'ModelBase'
+    # Set `encoding` to `False` for a model that handles binary messages.
+    encoding = 'utf-8'
+    parser = json
+    timer = False
+
     def __init__(self, **kwargs):
         self.proc_type = kwargs.pop('proc_type', None)
         self.n_proc = kwargs.pop('n_proc', 1)
